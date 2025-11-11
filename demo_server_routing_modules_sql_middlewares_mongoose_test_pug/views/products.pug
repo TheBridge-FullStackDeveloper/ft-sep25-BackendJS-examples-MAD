@@ -1,0 +1,72 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        link(rel="stylesheet", href="/css/style.css")
+        title Document
+        
+    body
+        include ./header.pug
+
+        main
+            
+            h1 Buscador
+            input#productName(type="text")
+            button#searchButton Buscar
+            #result
+
+            h1 Crear nuevo producto
+
+            form(id="productForm")
+                label(for="id") ID:
+                br
+                input(type="number" name="id" id="id" required)
+                br
+
+                label(for="title") Título:
+                br
+                input(type="text" name="title" id="title" required)
+                br
+
+                label(for="price") Precio:
+                br
+                input(type="number" name="price" id="price" step="0.01" required)
+                br
+
+                label(for="description") Descripción:
+                br
+                textarea(name="description" id="description" rows="4" required)
+                br
+
+                label(for="image") URL de la imagen (JPG o PNG):
+                br
+                input(type="text" name="image" id="image" placeholder="https://..." )
+                br
+
+                label(for="companyName") Proveedor:
+                br
+                select(name="companyName" id="companyName" required)
+                    option(value="" disabled selected) -- Selecciona un proveedor --
+                    // Aquí añadirás tus opciones de proveedor
+                    option(value="La casa de las flores") La casa de las flores
+                    option(value="La casa de las plantas") La casa de las plantas
+                br
+
+                input(type="submit" value="Crear producto")
+
+                br
+            
+            h1 Aquí tienes #{msj}
+
+            section
+                each product in products
+                    article
+                        h1 Sección productos 
+                        p Título: #{product.title}
+                        p Descripción: #{product.description}
+                        p Precio: #{product.price}
+                        img(src=product.image, alt=product.title class="img_logo")
+        include ./footer.pug
+        script(src="/js/script.js")
