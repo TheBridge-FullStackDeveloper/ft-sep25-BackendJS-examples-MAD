@@ -1,34 +1,40 @@
-const books = [
-    { title: "Harry Potter", author: "J.K. Rowling", year: 1997 },
-    {
-      title: "Cien años de soledad",
-      author: "Gabriel García Márquez",
-      year: 1967,
-    },
-    { title: "El señor de los anillos", author: "J.R.R. Tolkien", year: 1954 },
-    { title: "El principito", author: "Antoine de Saint-Exupéry", year: 1943 },
-    {
-      title: "Don Quijote de la Mancha",
-      author: "Miguel de Cervantes",
-      year: 1605,
-    },
-  ];
+const { validationResult } = require("express-validator");
 
+const books = [
+  { title: "Harry Potter", author: "J.K. Rowling", year: 1997 },
+  {
+    title: "Cien años de soledad",
+    author: "Gabriel García Márquez",
+    year: 1967,
+  },
+  { title: "El señor de los anillos", author: "J.R.R. Tolkien", year: 1954 },
+  { title: "El principito", author: "Antoine de Saint-Exupéry", year: 1943 },
+  {
+    title: "Don Quijote de la Mancha",
+    author: "Miguel de Cervantes",
+    year: 1605,
+  },
+];
 
 // CREATE
 const createBook = (req, res) => {
   console.log(req.body);
 
+  // Validación de datos
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array(),
+    });
+  }
+
   const new_book = req.body;
 
   // Con query SQL seria:
   // INSERT INTO books (title, author, year) VALUES (...,...,...)
-  if (new_book.title && new_book.author && new_book.year) {
-    books.push(new_book); // Guardar
-    res.status(201).json({ success: true, msj: "Libro creado!", new_book });
-  } else {
-    res.status(400).json({ success: false, msj: "Fallo al crear libro!" });
-  }
+  books.push(new_book); // Guardar
+  res.status(201).json({ success: true, msj: "Libro creado!", new_book });
 };
 // READ
 const getBook = (req, res) => {
@@ -97,31 +103,34 @@ const editBook = (req, res) => {
 };
 // DELETE
 const deleteBook = (req, res) => {
+  // Validación de datos
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array(),
+    });
+  }
+
   const title = req.params.title;
 
   // Con query SQL seria:
   // DELETE FROM books WHERE title=...
 
-  if (title) {
-    // Busca la pos del libro. Devuelve -1 si no lo encuentra
-    const index = books.findIndex((b) => b.title == title);
-    if (index != -1) {
-      // libro encontrado
-      const book = books.splice(index, 1)[0]; // borra 1 elemento a partir de pos=index
-      res.status(200).json({ success: true, msj: "Libro borrado!", book });
-    } else {
-      res.status(404).json({ success: false, msj: "libro no encontrado!" });
-    }
+  // Busca la pos del libro. Devuelve -1 si no lo encuentra
+  const index = books.findIndex((b) => b.title == title);
+  if (index != -1) {
+    // libro encontrado
+    const book = books.splice(index, 1)[0]; // borra 1 elemento a partir de pos=index
+    res.status(200).json({ success: true, msj: "Libro borrado!", book });
   } else {
-    res
-      .status(400)
-      .json({ success: false, msj: "Error: Se requiere título de libro!" });
+    res.status(404).json({ success: false, msj: "libro no encontrado!" });
   }
 };
 
 module.exports = {
-    createBook,
-    getBook,
-    editBook,
-    deleteBook 
-}
+  createBook,
+  getBook,
+  editBook,
+  deleteBook,
+};
